@@ -1,35 +1,72 @@
-const express=require('express');
-const mongoose=require('mongoose');
-const path=require('path')
-const cors=require('cors');
-const { dbConnection } = require('./db/dbConnect');
-const {readdirSync}=require('fs')
+// const express=require('express');
+// const mongoose=require('mongoose');
+// const path=require('path')
+// const cors=require('cors');
+// const { dbConnection } = require('./db/dbConnect');
+// const {readdirSync}=require('fs')
 
-const app=express();
-require ('dotenv').config()
-const PORT=process.env.PORT || 5000
+// const app=express();
+// require ('dotenv').config()
+// const PORT=process.env.PORT || 5000
 
-//Middlw wares
+// //Middlw wares
 
-app.use(cors());
-app.use(express.json())
+// app.use(cors());
+// app.use(express.json())
 
-//routes
-readdirSync('./routes').map((route) => app.use('/api',require('./routes/' + route)))
+// //routes
+// readdirSync('./routes').map((route) => app.use('/api',require('./routes/' + route)))
 
 
-// server static files
+// // server static files
 
-app.use('/public',express.static(path.join(__dirname,'public')))
+// app.use('/public',express.static(path.join(__dirname,'public')))
 
-// const connect =()=>{
-//     mongoose.connect(process.env.MONGO).then(()=>{
-//         console.log("mongodb connected")
-//     }).catch((err)=>{
-//         throw err;
-//     })
+// // const connect =()=>{
+// //     mongoose.connect(process.env.MONGO).then(()=>{
+// //         console.log("mongodb connected")
+// //     }).catch((err)=>{
+// //         throw err;
+// //     })
 
+// // }
+// if (process.env.NODE_ENV === 'production') {
+//   const indexPath = path.join(__dirname, '..', 'frontend', 'build', 'index.html');
+//   console.log('Resolved Path:', indexPath);
+
+//   app.use(express.static(path.join(__dirname, '..', 'frontend', 'build')));
+//   app.get('*', (req, res) => {
+//     res.sendFile(indexPath);
+//   });
 // }
+
+// app.listen(PORT,()=>{
+//     dbConnection()
+//     console.log('server running')
+// })
+const express = require('express');
+const mongoose = require('mongoose');
+const path = require('path');
+const cors = require('cors');
+const { dbConnection } = require('./db/dbConnect');
+const { readdirSync } = require('fs');
+
+const app = express();
+require('dotenv').config();
+const PORT = process.env.PORT || 5000;
+
+// Middlewares
+app.use(cors());
+app.use(express.json());
+
+// Dynamically load routes
+const routesPath = path.join(__dirname, 'routes');
+readdirSync(routesPath).map((route) => app.use('/api', require(path.join(routesPath, route))));
+
+// Serve static files
+app.use('/public', express.static(path.join(__dirname, 'public')));
+
+// Serve static files for production
 if (process.env.NODE_ENV === 'production') {
   const indexPath = path.join(__dirname, '..', 'frontend', 'build', 'index.html');
   console.log('Resolved Path:', indexPath);
@@ -40,9 +77,8 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-
-app.listen(PORT,()=>{
-    dbConnection()
-    console.log('server running')
-})
+app.listen(PORT, () => {
+  dbConnection();
+  console.log('Server running on port', PORT);
+});
 
