@@ -31,10 +31,10 @@ app.use('/public',express.static(path.join(__dirname,'public')))
 
 // }
 if (process.env.NODE_ENV === 'production') {
-  const indexPath = path.join(__dirname, '..', 'client', 'build', 'index.html');
+  const indexPath = path.join(__dirname, '..', 'frontend', 'build', 'index.html');
   console.log('Resolved Path:', indexPath);
 
-  app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
+  app.use(express.static(path.join(__dirname, '..', 'frontend', 'build')));
   app.get('*', (req, res) => {
     res.sendFile(indexPath);
   });
